@@ -23,7 +23,7 @@ INPUT_S = """00100
 nums = [r for r in INPUT_S.splitlines()]
 
 with file_path.open() as fd:
-    nums = fd.readlines()
+    nums = [r.strip() for r in fd.readlines()]
 
 
 bin_len = len(nums[0])
@@ -48,3 +48,5 @@ gamma_dec = int(gamma, 2)
 eps_dec = int(eps, 2)
 
 print(f"part1 = {gamma_dec * eps_dec}")
+
+# part 2
