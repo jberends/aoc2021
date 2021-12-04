@@ -28,12 +28,30 @@ class Board:
     dim = 5
     def __init__(self, boardlines):
         boardlines = [[int(j) for j in i] for i in boardlines]
-        self.b = boardlines
+        self.board = boardlines
         self.matches = []
+        self.bingo = False
 
 
-    def match(self, num:int):
-        self.matches.append(num)
+    def match(self, match:int):
+        self.matches.append(match)
+
+        for i in range(5):
+            for j in range(5):
+                if self.board[i][j] == match:
+                    self.board[i][j] = True
+
+    def bingo_check(self) -> bool:
+        """check for bingo"""
+        row = False
+        column = False
+        diag = False
+
+        for i in range(5):
+            if all(self.board[i]):
+                self.bingo = True
+                return True
+            for j in range(5):
 
 
 
