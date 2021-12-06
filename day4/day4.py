@@ -1,4 +1,6 @@
 # uri: https://adventofcode.com/2021/day/4
+from typing import Optional
+
 from base import get_input
 
 file_path = get_input(4, ".txt")
@@ -24,42 +26,52 @@ INPUT = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,
  2  0 12  3  7
 """
 
+INPUT = file_path.read_text()
+
 class Board:
     dim = 5
-    def __init__(self, boardlines):
-        boardlines = [[int(j) for j in i] for i in boardlines]
-        self.board = boardlines
+    def __init__(self, board):
+        if len(board) < 25:
+            raise AssertionError(f"length of this board is not 25: {board}, {len(board)}")
+        self.board = [int(n) for n in board]
         self.matches = []
+
         self.bingo = False
 
 
-    def match(self, match:int):
-        self.matches.append(match)
+    def match(self, match:int) -> Optional[int]:
+        if match in self.board and not self.bingo:
+            self.matches.append(match)
+            if self.bingo_check():
+                return match * self.bingo_sum_times_match
 
-        for i in range(5):
-            for j in range(5):
-                if self.board[i][j] == match:
-                    self.board[i][j] = True
+    @property
+    def bingo_sum_times_match(self) -> int:
+        return sum(set(self.board) - set(self.matches)) * self.matches[-1]
 
     def bingo_check(self) -> bool:
         """check for bingo"""
-        row = False
-        column = False
-        diag = False
-
         for i in range(5):
-            if all(self.board[i]):
+            if all([self.board[i*5+j] in self.matches for j in range(5)]) or \
+                    all([self.board[i+j*5] in self.matches for j in range(5)]):
                 self.bingo = True
                 return True
-            for j in range(5):
-
+        return False
 
 
 nums = [int(n) for n in INPUT.splitlines()[0].split(",")]
 
-boardlines = [l.split() for l in INPUT.splitlines()[1:]]
+boardlines = [l.split() for l in INPUT.split("\n\n")]
 
-boards = []
-for i in range(int(len(boardlines)/6)):
-    boards.append(Board(boardlines[i*6+1:i*6+6]))
-pass
+boards = [Board(b) for b in boardlines[1:]]
+
+winned_boards = []
+for num in nums:
+    for index, board in enumerate(boards):
+        if index not in winned_boards and board.match(num):
+            bingo = True
+            print(f"board {index} wins: {board.bingo_sum_times_match=}")
+            winned_boards.append(index)
+
+print(f"{sorted(winned_boards)=}")
+print(set([n for n in range(len(boards))])-set(winned_boards))
