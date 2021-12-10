@@ -34,9 +34,9 @@ lines = INPUT.splitlines()
 # for line in lines:
 #     input, output = line.split(" | ")
 #
-#     blocks = [b for b in output.split()]
+#     input_blocks = [b for b in output.split()]
 #
-#     for block in blocks:
+#     for block in input_blocks:
 #         if len(block) in {2,3,4,7}:
 #             count += 1
 
@@ -44,13 +44,15 @@ lines = INPUT.splitlines()
 
 
 # part 2
-digit = {}
+
 
 for line in lines + lines:
+    digit = {}
     input, output = line.split(" | ")
-    blocks = [set(b) for b in output.split()]
+    input_blocks = [set(b) for b in input.split()]
 
-    for block in blocks:
+    # use the input to determine the digits
+    for block in 3 * input_blocks:
         if block in digit.values():
             pass
 
@@ -85,14 +87,24 @@ for line in lines + lines:
             elif 9 not in digit and 6 in digit and 0 in digit:
                 digit[9] = block
 
-digit_inv = {tuple(sorted(list(v))): k for k, v in digit.items()}
-for k,v in digit_inv.items():
-    print(f"{v=} {k}")
+    # # inverse the lookup of the digits for each line
+    # if len(digit) != 10:
+    #     raise ValueError(f"Not enough values in digit - saw {len(digit)}: {digit}")
 
-for line in lines:
-    _, output = line.split(" | ")
-    blocks = [set(b) for b in output.split()]
 
-    num = sum([10 ^ i * digit_inv[tuple(sorted(list(v)))] for i, v in enumerate(blocks)])
-    print(num)
+    def lookup_digit(block: set) -> int:
+        """Return the actual digit from digit when the blocks match."""
+        n = [k for k, v in digit.items() if v == block]
+        return n[0]
+
+
+    # use the output to calculation the number
+    output_blocks = [set(b) for b in output.split()]
+    number = []
+
+    for i,v in enumerate(output_blocks):
+        d = lookup_digit(v)
+        number.append(d * 10**i)
+
+    print(f"{sum(number)=}")
 pass
