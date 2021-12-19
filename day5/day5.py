@@ -17,7 +17,7 @@ INPUT_S = """0,9 -> 5,9
 5,5 -> 8,2"""
 
 inputs = INPUT_S.splitlines()
-# inputs = file_path.open().readlines()
+inputs = file_path.open().readlines()
 
 field = collections.Counter()
 for line in inputs:
@@ -70,16 +70,28 @@ for line in inputs:
             field[(fx, y)] += 1
     elif abs(tx-fx) == abs(ty-fy):
         # diagonal
-        ...
-        print(f"diag {fx, fy} -> {tx,ty}")
+        print(f"diag {fx, fy} -> {tx, ty}")
+        step_x = 1 if tx - fx > 0 else -1
+        step_y = 1 if ty - fy > 0 else -1
+        length = abs(tx-fx)
+        print(f"{length=}, {step_x=}, {step_y=}")
+        for i in range(length+1):
+            field[(fx+i*step_x, fy+i*step_y)] += 1
+            print(f"{(fx+i*step_x, fy+i*step_y)}={field[(fx+i*step_x, fy+i*step_y)]}")
+        
         
     else:
         # non diagonal lines
         pass
 
-# for i in range(9+1):
-#     for j in range(9+1):
-#         print(field.get((i, j),"."), end="")
-#     print('')
+for i in range(9+1):
+    for j in range(9+1):
+        print(field.get((i, j),"."), end="")
+    print('')
 
+counter = 0
+for pos, val in field.items():
+    if val >= 2:
+        counter += 1
 
+print(f"part2 {counter=}")
